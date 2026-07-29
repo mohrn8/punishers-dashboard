@@ -1,7 +1,7 @@
 {
-  "last_sync": "2026-09-08T14:00:00Z",
+  "last_sync": "2026-07-29T03:10:00Z",
   "ticker": [
-    { "text": "No alerts yet — waiting on first task run", "hot": false }
+    { "text": "Draft pending — monitor armed, no roster yet", "hot": false }
   ],
   "sections": {
     "injury_radar": {
