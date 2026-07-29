@@ -1,0 +1,24 @@
+{
+  "last_sync": "2026-09-08T14:00:00Z",
+  "ticker": [
+    { "text": "No alerts yet — waiting on first task run", "hot": false }
+  ],
+  "sections": {
+    "injury_radar": {
+      "updated": null,
+      "items": []
+    },
+    "trade_radar": {
+      "updated": null,
+      "items": []
+    },
+    "trend_tracker": {
+      "updated": null,
+      "items": []
+    },
+    "lineup_lock": {
+      "updated": null,
+      "items": []
+    }
+  }
+}
