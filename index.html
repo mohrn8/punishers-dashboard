@@ -27,7 +27,6 @@
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
   }
-
   header {
     border-bottom: 1px solid var(--border);
     padding: 24px 28px;
@@ -83,7 +82,6 @@
     70% { box-shadow: 0 0 0 8px rgba(76,141,255,0); }
     100% { box-shadow: 0 0 0 0 rgba(76,141,255,0); }
   }
-
   .ticker-row {
     max-width: 1000px;
     margin: 16px auto 0;
@@ -105,7 +103,6 @@
     border-color: rgba(255,107,94,0.35);
     color: var(--alert);
   }
-
   main {
     max-width: 1000px;
     margin: 0 auto;
@@ -117,7 +114,6 @@
   @media (max-width: 760px) {
     main { grid-template-columns: 1fr; }
   }
-
   .panel {
     background: var(--panel);
     backdrop-filter: blur(8px);
@@ -127,7 +123,6 @@
     transition: border-color 0.15s ease;
   }
   .panel:hover { border-color: var(--blue-dim); }
-
   .panel-head {
     display: flex;
     justify-content: space-between;
@@ -182,7 +177,6 @@
     color: var(--grey-dim);
     font-size: 13px;
   }
-
   footer {
     text-align: center;
     padding: 24px;
@@ -193,7 +187,6 @@
 </style>
 </head>
 <body>
-
 <header>
   <div class="header-row">
     <div class="brand">
@@ -206,19 +199,17 @@
   </div>
   <div class="ticker-row" id="ticker"></div>
 </header>
-
 <main id="panels"></main>
-
 <footer>Updates when scheduled tasks push to data.json &middot; reload to refresh</footer>
-
 <script>
 const PANEL_CONFIG = [
   { key: 'injury_radar', label: 'Injury & Opportunity' },
   { key: 'trade_radar', label: 'League Trade Radar' },
   { key: 'trend_tracker', label: 'Efficiency & Trends' },
   { key: 'lineup_lock', label: 'Sunday Lineup Lock' },
+  { key: 'camp_watch', label: 'Camp & Trending Watch' },
+  { key: 'colts_watch', label: 'Indianapolis Colts Watch' },
 ];
-
 function renderItems(items) {
   if (!items || !items.length) return '<div class="empty">No updates yet — waiting on first scheduled run.</div>';
   return '<ul>' + items.map(item => {
@@ -226,7 +217,6 @@ function renderItems(items) {
     return `<li class="${cls}">${item.text}</li>`;
   }).join('') + '</ul>';
 }
-
 function timeAgo(iso) {
   if (!iso) return '—';
   const diff = Date.now() - new Date(iso).getTime();
@@ -236,7 +226,6 @@ function timeAgo(iso) {
   if (hrs < 48) return hrs + 'h ago';
   return Math.round(hrs / 24) + 'd ago';
 }
-
 async function load() {
   let data = {};
   try {
@@ -245,14 +234,11 @@ async function load() {
   } catch (e) {
     data = {};
   }
-
   document.getElementById('sync-time').textContent = data.last_sync ? 'synced ' + timeAgo(data.last_sync) : 'no data yet';
-
   const ticker = document.getElementById('ticker');
   ticker.innerHTML = (data.ticker || []).map(t =>
     `<div class="pill ${t.hot ? 'hot' : ''}">${t.text}</div>`
   ).join('') || '<div class="pill">No alerts yet</div>';
-
   const main = document.getElementById('panels');
   main.innerHTML = PANEL_CONFIG.map(cfg => {
     const section = (data.sections && data.sections[cfg.key]) || {};
@@ -267,7 +253,6 @@ async function load() {
     `;
   }).join('');
 }
-
 load();
 </script>
 </body>

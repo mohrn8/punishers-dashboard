@@ -1,7 +1,9 @@
 {
-  "last_sync": "2026-07-29T03:11:57Z",
+  "last_sync": "2026-07-30T02:10:08Z",
   "ticker": [
-    { "text": "Draft pending — monitor armed, no roster yet", "hot": false }
+    { "text": "Shemar Stewart carted off at Bengals camp", "hot": true },
+    { "text": "Alec Pierce, CJ Allen open Colts camp on PUP", "hot": true },
+    { "text": "Draft pending — no roster yet", "hot": false }
   ],
   "sections": {
     "injury_radar": {
@@ -19,6 +21,28 @@
     "lineup_lock": {
       "updated": null,
       "items": []
+    },
+    "camp_watch": {
+      "updated": "2026-07-30T02:10:08Z",
+      "items": [
+        { "text": "<b>Shemar Stewart</b> (CIN DE) carted off during first 11-on-11 drills, could not put weight on left leg — per SI", "flag": true },
+        { "text": "<b>Tucker Kraft</b> and <b>Luke Musgrave</b> both open Packers camp on PUP — thins a TE room worth watching on draft day", "flag": true },
+        { "text": "<b>Zach Charbonnet</b> (SEA RB) on active PUP recovering from torn ACL — handcuff value in flux", "flag": true },
+        { "text": "<b>Ikem Ekwonu</b> (CAR LT) on PUP after tearing his patellar tendon in January's wild-card loss to the Rams", "flag": false },
+        { "text": "<b>Brian Branch</b> (DET) tracking toward a season-opening PUP designation after a torn Achilles", "flag": false },
+        { "text": "<b>Vita Vea</b> (TB DT) reported to camp in street clothes — hold-in amid his trade request", "flag": false }
+      ]
+    },
+    "colts_watch": {
+      "updated": "2026-07-30T02:10:08Z",
+      "items": [
+        { "text": "<b>Daniel Jones</b> is the camp storyline — returning from a Week 14 Achilles tear, signed a 2yr/$88M extension this offseason", "flag": true },
+        { "text": "<b>Alec Pierce</b> (ankle) and LB <b>CJ Allen</b> open camp on active PUP; Pierce may be limited for much of camp", "flag": true },
+        { "text": "<b>Michael Pittman Jr.</b> traded to the Steelers — reshapes the WR room around Pierce", "flag": true },
+        { "text": "Camp runs <b>July 29 – Aug 20</b> at Grand Park in Westfield", "flag": false },
+        { "text": "<b>DeForest Buckner</b> also working back from injury entering camp", "flag": false },
+        { "text": "Kwity Paye and Samson Ebukam allowed to walk in free agency — Colts betting on <b>Laiatu Latu</b> after he more than doubled his sack total in 2025", "flag": false }
+      ]
     }
   }
 }
