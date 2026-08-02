@@ -103,16 +103,43 @@
     border-color: rgba(255,107,94,0.35);
     color: var(--alert);
   }
+  .tabs {
+    max-width: 1000px;
+    margin: 18px auto 0;
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--grey);
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transform: translateY(1px);
+  }
+  .tab-btn:hover { color: var(--white); }
+  .tab-btn.active {
+    color: var(--white);
+    border-bottom-color: var(--blue);
+  }
   main {
     max-width: 1000px;
     margin: 0 auto;
     padding: 32px 24px 80px;
+  }
+  .panel-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
+  .panel-grid.single-col { grid-template-columns: 1fr; }
   @media (max-width: 760px) {
-    main { grid-template-columns: 1fr; }
+    .panel-grid { grid-template-columns: 1fr; }
   }
   .panel {
     background: var(--panel);
@@ -177,6 +204,95 @@
     color: var(--grey-dim);
     font-size: 13px;
   }
+  .notepad {
+    background:
+      repeating-linear-gradient(180deg, transparent 0px, transparent 33px, rgba(76,141,255,0.12) 33px, rgba(76,141,255,0.12) 34px),
+      var(--panel);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 20px 20px 44px;
+    position: relative;
+    min-height: 300px;
+  }
+  .notepad::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255,107,94,0.25);
+  }
+  .note-add-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .note-input {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 33px;
+    height: 33px;
+  }
+  .note-input:focus {
+    outline: none;
+    border-color: var(--blue-dim);
+  }
+  .note-add-btn {
+    background: var(--blue);
+    color: #0A0D12;
+    border: none;
+    border-radius: 6px;
+    padding: 0 18px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .note-add-btn:hover { opacity: 0.88; }
+  .note-list {
+    list-style: none;
+    display: grid;
+  }
+  .note-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 33px;
+    font-size: 14px;
+    color: var(--white);
+  }
+  .note-item::before {
+    content: '•';
+    color: var(--blue);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .note-text { flex: 1; }
+  .note-del {
+    background: none;
+    border: none;
+    color: var(--grey-dim);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+  .note-del:hover { color: var(--alert); }
+  .note-meta {
+    margin-top: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--grey-dim);
+  }
   footer {
     text-align: center;
     padding: 24px;
@@ -199,17 +315,64 @@
   </div>
   <div class="ticker-row" id="ticker"></div>
 </header>
+<nav class="tabs" id="tabs"></nav>
 <main id="panels"></main>
 <footer>Updates when scheduled tasks push to data.json &middot; reload to refresh</footer>
 <script>
-const PANEL_CONFIG = [
-  { key: 'injury_radar', label: 'Injury & Opportunity' },
-  { key: 'trade_radar', label: 'League Trade Radar' },
-  { key: 'trend_tracker', label: 'Efficiency & Trends' },
-  { key: 'lineup_lock', label: 'Sunday Lineup Lock' },
-  { key: 'camp_watch', label: 'Camp & Trending Watch' },
-  { key: 'colts_watch', label: 'Indianapolis Colts Watch' },
+const TABS = [
+  {
+    id: 'draft-prep',
+    label: 'Draft Prep',
+    single: true,
+    panels: [
+      { key: 'pre_draft', label: 'Draft Prep — Cheat Sheet Highlights' },
+    ],
+  },
+  {
+    id: 'draft-strategy',
+    label: 'Draft Strategy',
+    single: true,
+    panels: [
+      { key: 'draft_strategy', label: 'Draft Strategy & Game Plan' },
+    ],
+  },
+  {
+    id: 'draft-day',
+    label: 'Draft Day',
+    single: true,
+    panels: [
+      { key: 'draft_day', label: 'Live Draft Tracker' },
+    ],
+  },
+  {
+    id: 'season',
+    label: 'Season',
+    single: false,
+    panels: [
+      { key: 'injury_radar', label: 'Injury & Opportunity' },
+      { key: 'trade_radar', label: 'League Trade Radar' },
+      { key: 'trend_tracker', label: 'Efficiency & Trends' },
+      { key: 'lineup_lock', label: 'Sunday Lineup Lock' },
+      { key: 'camp_watch', label: 'Camp & Trending Watch' },
+    ],
+  },
+  {
+    id: 'colts',
+    label: 'Colts',
+    single: true,
+    panels: [
+      { key: 'colts_watch', label: 'Indianapolis Colts Watch' },
+    ],
+  },
+  {
+    id: 'notes',
+    label: 'Notes',
+    single: true,
+    isNotepad: true,
+  },
 ];
+let activeTab = 'draft-prep';
+let currentData = {};
 function renderItems(items) {
   if (!items || !items.length) return '<div class="empty">No updates yet — waiting on first scheduled run.</div>';
   return '<ul>' + items.map(item => {
@@ -226,6 +389,96 @@ function timeAgo(iso) {
   if (hrs < 48) return hrs + 'h ago';
   return Math.round(hrs / 24) + 'd ago';
 }
+function renderTabs() {
+  const tabsNav = document.getElementById('tabs');
+  tabsNav.innerHTML = TABS.map(t =>
+    `<button class="tab-btn ${t.id === activeTab ? 'active' : ''}" data-tab="${t.id}">${t.label}</button>`
+  ).join('');
+  tabsNav.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTab = btn.dataset.tab;
+      renderTabs();
+      renderPanels();
+    });
+  });
+}
+const NOTES_KEY = 'punishers_notes_v1';
+function getNotes() {
+  try {
+    return JSON.parse(localStorage.getItem(NOTES_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+function saveNotes(notes) {
+  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+}
+function renderNotepad() {
+  const notes = getNotes();
+  const main = document.getElementById('panels');
+  main.innerHTML = `
+    <div class="notepad">
+      <div class="note-add-row">
+        <input type="text" class="note-input" id="note-input" placeholder="Add a note or data point…" />
+        <button class="note-add-btn" id="note-add-btn">Add</button>
+      </div>
+      <ul class="note-list" id="note-list"></ul>
+      <div class="note-meta">Saved in this browser only &middot; ${notes.length} note${notes.length === 1 ? '' : 's'}</div>
+    </div>
+  `;
+  const list = document.getElementById('note-list');
+  list.innerHTML = notes.map((n, i) => `
+    <li class="note-item">
+      <span class="note-text">${n.text}</span>
+      <button class="note-del" data-idx="${i}">&times;</button>
+    </li>
+  `).join('') || '<li class="empty" style="list-style:none;">No notes yet — add one above.</li>';
+  list.querySelectorAll('.note-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const updated = getNotes();
+      updated.splice(idx, 1);
+      saveNotes(updated);
+      renderNotepad();
+    });
+  });
+  function addNote() {
+    const input = document.getElementById('note-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const updated = getNotes();
+    updated.push({ text, added: new Date().toISOString() });
+    saveNotes(updated);
+    renderNotepad();
+    document.getElementById('note-input').focus();
+  }
+  document.getElementById('note-add-btn').addEventListener('click', addNote);
+  document.getElementById('note-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addNote();
+  });
+  document.getElementById('note-input').focus();
+}
+function renderPanels() {
+  const tab = TABS.find(t => t.id === activeTab);
+  if (tab.isNotepad) {
+    renderNotepad();
+    return;
+  }
+  const main = document.getElementById('panels');
+  main.innerHTML = `<div class="panel-grid ${tab.single ? 'single-col' : ''}">` +
+    tab.panels.map(cfg => {
+      const section = (currentData.sections && currentData.sections[cfg.key]) || {};
+      return `
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-label">${cfg.label}</div>
+            <div class="panel-updated">${section.updated ? timeAgo(section.updated) : 'never run'}</div>
+          </div>
+          <div class="panel-body">${renderItems(section.items)}</div>
+        </div>
+      `;
+    }).join('') + '</div>';
+}
 async function load() {
   let data = {};
   try {
@@ -234,24 +487,14 @@ async function load() {
   } catch (e) {
     data = {};
   }
+  currentData = data;
   document.getElementById('sync-time').textContent = data.last_sync ? 'synced ' + timeAgo(data.last_sync) : 'no data yet';
   const ticker = document.getElementById('ticker');
   ticker.innerHTML = (data.ticker || []).map(t =>
     `<div class="pill ${t.hot ? 'hot' : ''}">${t.text}</div>`
   ).join('') || '<div class="pill">No alerts yet</div>';
-  const main = document.getElementById('panels');
-  main.innerHTML = PANEL_CONFIG.map(cfg => {
-    const section = (data.sections && data.sections[cfg.key]) || {};
-    return `
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-label">${cfg.label}</div>
-          <div class="panel-updated">${section.updated ? timeAgo(section.updated) : 'never run'}</div>
-        </div>
-        <div class="panel-body">${renderItems(section.items)}</div>
-      </div>
-    `;
-  }).join('');
+  renderTabs();
+  renderPanels();
 }
 load();
 </script>

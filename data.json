@@ -7,6 +7,18 @@
     { "text": "Draft pending — no roster yet", "hot": false }
   ],
   "sections": {
+    "pre_draft": {
+      "updated": null,
+      "items": []
+    },
+    "draft_strategy": {
+      "updated": null,
+      "items": []
+    },
+    "draft_day": {
+      "updated": null,
+      "items": []
+    },
     "injury_radar": {
       "updated": null,
       "items": []
