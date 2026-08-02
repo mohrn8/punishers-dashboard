@@ -1,8 +1,9 @@
 {
-  "last_sync": "2026-07-30T02:10:08Z",
+  "last_sync": "2026-08-02T16:12:00Z",
   "ticker": [
-    { "text": "Shemar Stewart carted off at Bengals camp", "hot": true },
-    { "text": "Alec Pierce, CJ Allen open Colts camp on PUP", "hot": true },
+    { "text": "Ricky Pearsall to miss all of 2026 — PCL surgery, season-ending IR", "hot": true },
+    { "text": "Zach Charbonnet lands on reserve/PUP — out a minimum of 4 games", "hot": true },
+    { "text": "Shane Steichen missed Saturday's Colts practice — personal matter, expected back", "hot": false },
     { "text": "Draft pending — no roster yet", "hot": false }
   ],
   "sections": {
@@ -23,25 +24,25 @@
       "items": []
     },
     "camp_watch": {
-      "updated": "2026-07-30T02:10:08Z",
+      "updated": "2026-08-02T14:35:00Z",
       "items": [
-        { "text": "<b>Shemar Stewart</b> (CIN DE) carted off during first 11-on-11 drills, could not put weight on left leg — per SI", "flag": true },
-        { "text": "<b>Tucker Kraft</b> and <b>Luke Musgrave</b> both open Packers camp on PUP — thins a TE room worth watching on draft day", "flag": true },
-        { "text": "<b>Zach Charbonnet</b> (SEA RB) on active PUP recovering from torn ACL — handcuff value in flux", "flag": true },
-        { "text": "<b>Ikem Ekwonu</b> (CAR LT) on PUP after tearing his patellar tendon in January's wild-card loss to the Rams", "flag": false },
-        { "text": "<b>Brian Branch</b> (DET) tracking toward a season-opening PUP designation after a torn Achilles", "flag": false },
-        { "text": "<b>Vita Vea</b> (TB DT) reported to camp in street clothes — hold-in amid his trade request", "flag": false }
+        { "text": "Chiefs rookie WR <b>Cyrus Allen</b> was carted off Saturday after colliding with CB Kaiir Elam on a special-teams drill — tests came back a shin bruise, nothing torn or broken", "flag": false },
+        { "text": "Bills S <b>C.J. Gardner-Johnson</b> pulled up non-contact in Saturday 11-on-11s grabbing his right lower leg; reported as a calf strain, no serious damage", "flag": false },
+        { "text": "<b>Malik Nabers</b> will NOT open on PUP — running routes at full speed at Giants camp and on track for Week 1, which removes the biggest discount on his ADP", "flag": true },
+        { "text": "Panthers RB <b>Jonathon Brooks</b> continues to take first-team reps with Dave Canales talking him up, per Mike Kaye — shaping into a 1-2 punch with Chuba Hubbard (ongoing)", "flag": true },
+        { "text": "Eagles EDGE <b>Jonathan Greenard</b> opened camp on PUP with a pec strain suffered lifting; the team does not expect it to be long-term", "flag": false },
+        { "text": "Seahawks S <b>Nick Emmanwori</b> also opened camp on PUP following offseason ankle surgery — roughly 40 players leaguewide started 2026 camp on PUP/NFI/IR", "flag": false }
       ]
     },
     "colts_watch": {
-      "updated": "2026-07-30T02:10:08Z",
+      "updated": "2026-08-02T14:35:00Z",
       "items": [
-        { "text": "<b>Daniel Jones</b> is the camp storyline — returning from a Week 14 Achilles tear, signed a 2yr/$88M extension this offseason", "flag": true },
-        { "text": "<b>Alec Pierce</b> (ankle) and LB <b>CJ Allen</b> open camp on active PUP; Pierce may be limited for much of camp", "flag": true },
-        { "text": "<b>Michael Pittman Jr.</b> traded to the Steelers — reshapes the WR room around Pierce", "flag": true },
-        { "text": "Camp runs <b>July 29 – Aug 20</b> at Grand Park in Westfield", "flag": false },
-        { "text": "<b>DeForest Buckner</b> also working back from injury entering camp", "flag": false },
-        { "text": "Kwity Paye and Samson Ebukam allowed to walk in free agency — Colts betting on <b>Laiatu Latu</b> after he more than doubled his sack total in 2025", "flag": false }
+        { "text": "HC <b>Shane Steichen</b> was absent from Saturday's Day 4 practice due to a personal matter and skipped his scheduled media session; the team expects him back soon, per Kevin Bowen", "flag": false },
+        { "text": "Rookie S <b>A.J. Haulcy</b> took the starting strong-safety reps Saturday after <b>Hunter Wohler</b> was stretched out on the sideline early and did not return — first flip in that battle", "flag": true },
+        { "text": "Backup RB race heating up: <b>DJ Giddens</b> and 7th-rounder <b>Seth McGowan</b> both broke off touchdown runs Saturday; McGowan is firmly in the mix behind Jonathan Taylor, per Kevin Bowen", "flag": false },
+        { "text": "<b>Riley Leonard</b> took the bulk of second-team reps for the first time (4-of-8, rushing TD, 50-yard bomb to Westbrook-Ikhine) while <b>Anthony Richardson Sr.</b> went 1-of-4, per Horseshoe Huddle", "flag": false },
+        { "text": "WR <b>Alec Pierce</b> still has not practiced — Horseshoe Huddle lists ankle, 1075 The Fan lists calf and PUP; DT Derrick Nnadi and CB Cameron Mitchell also sat Saturday (ongoing)", "flag": false },
+        { "text": "Colts are off Sunday; first full-padded practice is Monday 8/3, with a joint practice at New England 8/11 and the preseason opener there 8/13", "flag": false }
       ]
     }
   }
