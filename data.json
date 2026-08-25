@@ -30,7 +30,7 @@
         { "text": "Wait on QB until the <b>83-110</b> range. Pass TDs are worth 4 and pass yards 0.05, compressing the position — spending pick 35 or 38 on an elite QB is a 50-pick premium at the one slot where you start exactly one player", "flag": true },
         { "text": "Kicker at <b>182</b>, your final pick, and not one round earlier. There is NO team-defense slot in this league — never draft one at any price", "flag": true },
         { "text": "Because 12+ team defenses sit inside standard top-192 ADP and none will be drafted here, the board plays roughly 14 picks deeper than public ADP implies. Pick 182 is closer to ADP rank ~196 — late-round targets last longer than their numbers suggest", "flag": false },
-        { "text": "KEEPER — you keep exactly one player (<code>max_keepers</code>: 1). Weigh the candidate against what pick 11 would otherwise return; a keeper only earns its place if it beats the 11th-best player available. Send your 2025 roster and I'll rank the options", "flag": true }
+        { "text": "NO KEEPERS — the league setting says <code>max_keepers</code>: 1 but the league does not use it. That is good news for planning: nobody is removed from the pool, so public ADP maps cleanly onto this draft. In keeper leagues the top of the board is thinned unpredictably; here, the consensus board is the real board", "flag": false }
       ]
     },
     "draft_day": {
