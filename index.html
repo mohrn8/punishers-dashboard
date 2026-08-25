@@ -670,6 +670,67 @@ function startDraftPolling() {
   pollDraft();
   draftTimer = setInterval(pollDraft, 15000);
 }
+
+/* Copy-paste briefing — bring a fresh Claude chat up to speed in one paste */
+const BRIEF = [
+  "I'm drafting in my Sleeper fantasy football league. Here's everything you need:",
+  "",
+  "LEAGUE: \"MFL\" — Sleeper league ID 1325388108564291584, 2026 season, 12 teams, full PPR",
+  "DRAFT: draft ID 1325388108576849920 — 16-round snake, 120-second pick timer, CPU autopick ON",
+  "ME: username mohrn, team \"The Punishers\", user_id 992218322173255680, roster_id 3",
+  "MY DRAFT SLOT: 11 of 12",
+  "MY PICKS: 11, 14, 35, 38, 59, 62, 83, 86, 107, 110, 131, 134, 155, 158, 179, 182",
+  "",
+  "LINEUP: QB, RB, RB, WR, WR, WR, TE, FLEX, K + 7 bench, 2 IR.",
+  "There is NO team-defense slot — never suggest a DEF. A kicker IS required; take one with the last pick (182).",
+  "",
+  "SCORING QUIRKS THAT CHANGE VALUE:",
+  "- Full PPR, 1.0 per reception, 0.1 per receiving yard",
+  "- 0.1 points per RUSH ATTEMPT — volume backs are worth more here than standard PPR (a 280-carry back banks 28 pts on volume alone)",
+  "- Pass TD only 4, pass yards 0.05 — QBs are devalued, wait until picks 83-110",
+  "- 100-yard rush bonus 2.5, 200-yard 6.0",
+  "- league_average_match is ON: I also play the league median every week, so consistency beats boom/bust",
+  "- NO KEEPERS. 7 of 12 teams make the playoffs, starting week 15",
+  "- Because no DEF is drafted, the board plays ~14 picks deeper than public ADP implies",
+  "",
+  "STRUCTURAL NOTE: I pick at 11 and 14 nearly back-to-back, then wait 20 picks until 35. Treat 11/14 as one decision.",
+  "",
+  "LIVE PICKS: https://api.sleeper.app/v1/draft/1325388108576849920/picks",
+  "(each pick's metadata contains first_name, last_name, position, team — no player-ID lookup needed)",
+  "MY DASHBOARD: https://mohrn8.github.io/punishers-dashboard/",
+  "",
+  "Please fetch the live picks and help me decide who to take."
+].join("\n");
+
+function briefHTML() {
+  return '<div class="brief">'
+    + '<div class="brief-head"><div class="brief-title">Draft Day Briefing</div>'
+    + '<button class="brief-btn" id="brief-btn">Copy</button></div>'
+    + '<div class="brief-sub">On a different computer? Paste this into a fresh Claude chat and it will know your league, slot, and scoring instantly.</div>'
+    + '<pre id="brief-text"></pre></div>';
+}
+
+function wireBrief() {
+  const pre = document.getElementById('brief-text');
+  if (!pre) return;
+  pre.textContent = BRIEF;
+  const btn = document.getElementById('brief-btn');
+  btn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(BRIEF);
+    } catch (e) {
+      const r = document.createRange();
+      r.selectNodeContents(pre);
+      const s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+      return;
+    }
+    btn.textContent = 'Copied';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1800);
+  });
+}
 /* =============== END LIVE DRAFT BOARD =============== */
 function renderItems(items) {
   if (!items || !items.length) return '<div class="empty">No updates yet — waiting on first scheduled run.</div>';
@@ -785,9 +846,13 @@ function renderPanels() {
           <div class="panel-body">${renderItems(section.items)}</div>
         </div>
       `;
-    }).join('') + '</div>';
+    }).join('') + '</div>'
+    + (tab.id === 'draft-day' ? briefHTML() : '');
 
-  if (tab.id === 'draft-day') startDraftPolling();
+  if (tab.id === 'draft-day') {
+    startDraftPolling();
+    wireBrief();
+  }
 }
 async function load() {
   let data = {};
