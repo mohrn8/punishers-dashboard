@@ -300,6 +300,134 @@
     font-size: 10.5px;
     color: var(--grey-dim);
   }
+  /* ---- live draft board ---- */
+  .live {
+    background: var(--panel);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .live.on-clock { border-color: var(--alert); }
+  .live-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .live-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--alert);
+    animation: pulse 2s infinite;
+  }
+  .live-refresh {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .live-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+  .stat {
+    background: rgba(16,21,29,0.6);
+    padding: 14px 16px;
+  }
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    color: var(--grey-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 5px;
+  }
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    color: var(--white);
+  }
+  .stat-value.hot { color: var(--alert); }
+  .stat-value.small { font-size: 13.5px; font-weight: 600; }
+  .live-section {
+    padding: 15px 18px;
+    border-top: 1px solid var(--border);
+  }
+  .live-section h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .runs { display: flex; gap: 7px; flex-wrap: wrap; }
+  .run {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: rgba(76,141,255,0.08);
+    border: 1px solid rgba(76,141,255,0.22);
+    color: var(--blue);
+  }
+  .run.surge {
+    background: rgba(255,107,94,0.1);
+    border-color: rgba(255,107,94,0.35);
+    color: var(--alert);
+  }
+  .picks { list-style: none; display: grid; gap: 7px; }
+  .pick {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 13px;
+    padding-left: 11px;
+    border-left: 2px solid var(--border);
+  }
+  .pick.mine { border-left-color: var(--blue); }
+  .pick-no {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--grey-dim);
+    min-width: 46px;
+  }
+  .pick-name { color: var(--white); font-weight: 500; }
+  .pick-pos {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+  }
+  .pick-team {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--grey-dim);
+    margin-left: auto;
+    text-align: right;
+  }
+  .live-err {
+    padding: 15px 18px;
+    font-size: 13px;
+    color: var(--alert);
+    border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 <body>
@@ -373,6 +501,119 @@ const TABS = [
 ];
 let activeTab = 'draft-prep';
 let currentData = {};
+
+/* ================= LIVE DRAFT BOARD ================= */
+const DRAFT_ID = '1325388108576849920';
+const TEAMS = 12;
+const ROUNDS = 16;
+const MY_SLOT = 11;                       // confirmed from draft_order
+const MY_PICKS = [11,14,35,38,59,62,83,86,107,110,131,134,155,158,179,182];
+// slot -> team name, derived from slot_to_roster_id + league users
+const SLOT_TEAM = {
+  1:'Indiana Firebirds', 2:'Sir Loin of House Steak', 3:'Pissing Excellence',
+  4:'Derri-Lick My Balls 2x', 5:'Juice 4x', 6:'KeeganDodd',
+  7:'got pasta', 8:"IPlay's Regime", 9:'The Bums',
+  10:'Magic in the Hampton 2', 11:'THE PUNISHERS (you)', 12:'Men of Stiggle'
+};
+let draftTimer = null;
+
+function slotForPick(n) {
+  const round = Math.ceil(n / TEAMS);
+  const idx = ((n - 1) % TEAMS) + 1;
+  return round % 2 === 1 ? idx : TEAMS + 1 - idx;   // snake
+}
+function nextMyPick(current) {
+  return MY_PICKS.find(p => p >= current) || null;
+}
+
+async function pollDraft() {
+  const box = document.getElementById('live-board');
+  if (!box) { clearInterval(draftTimer); draftTimer = null; return; }
+
+  let picks;
+  try {
+    const res = await fetch(`https://api.sleeper.app/v1/draft/${DRAFT_ID}/picks?t=${Date.now()}`);
+    picks = await res.json();
+  } catch (e) {
+    box.innerHTML = `<div class="live-err">Can't reach Sleeper right now — retrying in 15s. Check the Sleeper app directly.</div>`;
+    return;
+  }
+  if (!Array.isArray(picks)) picks = [];
+
+  const made = picks.length;
+  const total = TEAMS * ROUNDS;
+  const current = made + 1;
+  const done = made >= total;
+
+  const onSlot = done ? null : slotForPick(current);
+  const myNext = nextMyPick(current);
+  const until = myNext ? myNext - current : null;
+  const onClock = onSlot === MY_SLOT;
+
+  // positional runs across the last 12 picks
+  const recent = picks.slice(-12);
+  const counts = {};
+  recent.forEach(p => {
+    const pos = (p.metadata && p.metadata.position) || '?';
+    counts[pos] = (counts[pos] || 0) + 1;
+  });
+  const runs = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+  const last = picks.slice(-10).reverse();
+
+  box.className = 'live' + (onClock ? ' on-clock' : '');
+  box.innerHTML = `
+    <div class="live-head">
+      <div class="live-title"><span class="live-dot"></span>${done ? 'Draft Complete' : (made === 0 ? 'Draft Not Started' : 'Live Draft Board')}</div>
+      <div class="live-refresh">auto-refresh 15s &middot; ${new Date().toLocaleTimeString()}</div>
+    </div>
+    <div class="live-stats">
+      <div class="stat">
+        <div class="stat-label">Picks Made</div>
+        <div class="stat-value">${made} <span style="font-size:13px;color:var(--grey-dim)">/ ${total}</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">On The Clock</div>
+        <div class="stat-value small ${onClock ? 'hot' : ''}">${done ? '—' : (SLOT_TEAM[onSlot] || ('Slot ' + onSlot))}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Your Next Pick</div>
+        <div class="stat-value">${myNext || '—'}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">${onClock ? 'Status' : 'Picks Until You'}</div>
+        <div class="stat-value ${onClock || (until !== null && until <= 3) ? 'hot' : ''}">${onClock ? 'PICK NOW' : (until === null ? '—' : until)}</div>
+      </div>
+    </div>
+    ${runs.length ? `
+      <div class="live-section">
+        <h4>Position runs — last ${recent.length} picks</h4>
+        <div class="runs">
+          ${runs.map(([pos, n]) => `<div class="run ${n >= 4 ? 'surge' : ''}">${pos} &times;${n}</div>`).join('')}
+        </div>
+      </div>` : ''}
+    <div class="live-section">
+      <h4>Most recent picks</h4>
+      ${last.length ? `<ul class="picks">${last.map(p => {
+        const m = p.metadata || {};
+        const mine = p.draft_slot === MY_SLOT;
+        return `<li class="pick ${mine ? 'mine' : ''}">
+          <span class="pick-no">${p.round}.${String(p.pick_no - (p.round - 1) * TEAMS).padStart(2, '0')}</span>
+          <span class="pick-name">${(m.first_name || '') + ' ' + (m.last_name || '')}</span>
+          <span class="pick-pos">${m.position || ''}${m.team ? ' · ' + m.team : ''}</span>
+          <span class="pick-team">${SLOT_TEAM[p.draft_slot] || ''}</span>
+        </li>`;
+      }).join('')}</ul>` : '<div class="empty">No picks yet — board goes live when the draft starts.</div>'}
+    </div>
+  `;
+}
+
+function startDraftPolling() {
+  if (draftTimer) clearInterval(draftTimer);
+  pollDraft();
+  draftTimer = setInterval(pollDraft, 15000);
+}
+/* =============== END LIVE DRAFT BOARD =============== */
 function renderItems(items) {
   if (!items || !items.length) return '<div class="empty">No updates yet — waiting on first scheduled run.</div>';
   return '<ul>' + items.map(item => {
@@ -460,12 +701,22 @@ function renderNotepad() {
 }
 function renderPanels() {
   const tab = TABS.find(t => t.id === activeTab);
+
+  // leaving the draft-day tab stops the poll
+  if (tab.id !== 'draft-day' && draftTimer) {
+    clearInterval(draftTimer);
+    draftTimer = null;
+  }
+
   if (tab.isNotepad) {
     renderNotepad();
     return;
   }
   const main = document.getElementById('panels');
-  main.innerHTML = `<div class="panel-grid ${tab.single ? 'single-col' : ''}">` +
+  const liveBoard = tab.id === 'draft-day'
+    ? '<div class="live" id="live-board"><div class="live-head"><div class="live-title">Loading live board…</div></div></div>'
+    : '';
+  main.innerHTML = liveBoard + `<div class="panel-grid ${tab.single ? 'single-col' : ''}">` +
     tab.panels.map(cfg => {
       const section = (currentData.sections && currentData.sections[cfg.key]) || {};
       return `
@@ -478,6 +729,8 @@ function renderPanels() {
         </div>
       `;
     }).join('') + '</div>';
+
+  if (tab.id === 'draft-day') startDraftPolling();
 }
 async function load() {
   let data = {};
