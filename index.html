@@ -573,6 +573,51 @@ const SLOT_TEAM = {
   10:'Magic in the Hampton 2', 11:'THE PUNISHERS (you)', 12:'Men of Stiggle'
 };
 let draftTimer = null;
+let bigBoard = [];   // league-adjusted best-available board, from data.json
+
+function draftedNameSet(picks) {
+  const s = new Set();
+  picks.forEach(p => {
+    const m = p.metadata || {};
+    const name = ((m.first_name || '') + ' ' + (m.last_name || '')).trim().toLowerCase();
+    if (name) s.add(name);
+  });
+  return s;
+}
+
+function bestAvailableHTML(picks) {
+  if (!bigBoard.length) return '';
+  const drafted = draftedNameSet(picks);
+  const available = bigBoard.filter(p => !drafted.has(String(p.name || '').trim().toLowerCase()));
+
+  const positions = ['QB', 'RB', 'WR', 'TE'];
+  const topByPos = positions.map(pos => ({
+    pos,
+    best: available.filter(p => p.pos === pos).slice(0, 3)
+  }));
+
+  return `
+    <div class="live-section">
+      <h4>Best available — adjusted for this league's scoring</h4>
+      <div class="panel-grid single-col" style="gap:10px;">
+        ${topByPos.map(({ pos, best }) => `
+          <div>
+            <div class="run" style="display:inline-block;margin-bottom:6px;">${pos}</div>
+            <ul class="picks">
+              ${best.length ? best.map(p => `
+                <li class="pick">
+                  <span class="pick-name">${p.name}</span>
+                  <span class="pick-pos">T${p.tier} &middot; ${p.team}</span>
+                  ${p.note ? `<span class="pick-team" style="text-align:left;flex:1;">${p.note}</span>` : ''}
+                </li>
+              `).join('') : '<li class="empty">Tier exhausted</li>'}
+            </ul>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
 
 function slotForPick(n) {
   const round = Math.ceil(n / TEAMS);
