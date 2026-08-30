@@ -707,6 +707,7 @@ async function pollDraft() {
         </li>`;
       }).join('')}</ul>` : '<div class="empty">No picks yet — board goes live when the draft starts.</div>'}
     </div>
+    ${bestAvailableHTML(picks)}
   `;
 }
 
@@ -908,6 +909,7 @@ async function load() {
     data = {};
   }
   currentData = data;
+  bigBoard = data.big_board || [];
   document.getElementById('sync-time').textContent = data.last_sync ? 'synced ' + timeAgo(data.last_sync) : 'no data yet';
   const ticker = document.getElementById('ticker');
   ticker.innerHTML = (data.ticker || []).map(t =>
