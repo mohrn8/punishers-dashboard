@@ -8,13 +8,14 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>/Users/matthewohrn/Desktop/MFL/autopush.sh</string>
+		<string>/Users/matthewohrn/Projects/punishers-dashboard/autopush.sh</string>
 	</array>
 
-	<!-- Fires whenever data.json is modified, i.e. right after any task run -->
+	<!-- Fires whenever data.json or index.html is modified -->
 	<key>WatchPaths</key>
 	<array>
-		<string>/Users/matthewohrn/Desktop/MFL/data.json</string>
+		<string>/Users/matthewohrn/Projects/punishers-dashboard/data.json</string>
+		<string>/Users/matthewohrn/Projects/punishers-dashboard/index.html</string>
 	</array>
 
 	<!-- Don't fire more than once every 30s -->
@@ -22,8 +23,8 @@
 	<integer>30</integer>
 
 	<key>StandardOutPath</key>
-	<string>/Users/matthewohrn/Desktop/MFL/autopush.log</string>
+	<string>/Users/matthewohrn/Projects/punishers-dashboard/autopush.log</string>
 	<key>StandardErrorPath</key>
-	<string>/Users/matthewohrn/Desktop/MFL/autopush.log</string>
+	<string>/Users/matthewohrn/Projects/punishers-dashboard/autopush.log</string>
 </dict>
 </plist>

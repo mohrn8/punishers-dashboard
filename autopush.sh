@@ -4,7 +4,7 @@
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 
-REPO="$HOME/Desktop/MFL"
+REPO="$HOME/Projects/punishers-dashboard"
 LOG="$REPO/autopush.log"
 
 stamp() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
@@ -20,18 +20,19 @@ if ! command -v git >/dev/null 2>&1; then
   exit 1
 fi
 
-# Confirm we can actually read the repo (TCC on ~/Desktop can deny this)
+# Confirm we can actually read the repo
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
   echo "$(stamp)  FAIL  not a git repo, or read denied by macOS privacy protection" >> "$LOG"
   exit 1
 fi
 
 # Nothing changed? Exit quietly.
-if [ -z "$(git status --porcelain -- data.json index.html)" ]; then
+# Stages everything not gitignored, so spec/ and future files are covered too.
+if [ -z "$(git status --porcelain)" ]; then
   exit 0
 fi
 
-git add -- data.json index.html 2>>"$LOG"
+git add -A 2>>"$LOG"
 
 if ! git commit -m "Auto-sync dashboard $(stamp)" >>"$LOG" 2>&1; then
   echo "$(stamp)  FAIL  commit failed" >> "$LOG"
