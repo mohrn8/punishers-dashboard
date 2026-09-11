@@ -870,6 +870,89 @@ async function loadInjuries() {
   pollSeason();
 }
 
+/* 2026 NFL bye weeks (NFL.com, schedule release). No byes in weeks 1-4, 12, 15-18. */
+const TEAM_BYE = {
+  CAR:5, KC:5,
+  CIN:6, DET:6, MIA:6, MIN:6,
+  BUF:7, JAX:7, LAC:7, WAS:7,
+  HOU:8, NO:8, NYG:8, SF:8,
+  PIT:9, TEN:9,
+  CHI:10, DEN:10, PHI:10, TB:10,
+  ATL:11, CLE:11, GB:11, LAR:11, LA:11, NE:11, SEA:11,
+  BAL:13, IND:13, LV:13, NYJ:13,
+  ARI:14, AZ:14, DAL:14
+};
+const NEED = { QB: 1, RB: 2, WR: 3, TE: 1, K: 1 };   // FLEX filled from leftover RB/WR/TE
+
+/* Can a legal lineup be fielded in week w, given byes? Returns list of unfillable slots. */
+function slotGaps(playerIds, week) {
+  const avail = {};
+  playerIds.forEach(id => {
+    const e = nm(id);
+    if (!e.p) return;
+    if (TEAM_BYE[e.t] === week) return;     // on bye
+    avail[e.p] = (avail[e.p] || 0) + 1;
+  });
+  const gaps = [];
+  let spare = 0;
+  Object.keys(NEED).forEach(pos => {
+    const have = avail[pos] || 0;
+    const need = NEED[pos];
+    if (have < need) { for (let i = 0; i < need - have; i++) gaps.push(pos); }
+    else if (pos !== 'K' && pos !== 'QB') spare += have - need;
+  });
+  if (spare < 1) gaps.push('FLEX');
+  return gaps;
+}
+
+function byePlannerHTML(playerIds, currentWeek) {
+  const rows = [];
+  for (let w = currentWeek; w <= 14; w++) {
+    const onBye = playerIds.filter(id => TEAM_BYE[nm(id).t] === w);
+    if (!onBye.length) continue;
+    const gaps = slotGaps(playerIds, w);
+    rows.push({ w, onBye, gaps });
+  }
+  if (!rows.length) return '';
+  return `
+    <div class="live-section">
+      <h4>Bye-week planner — next unfillable slots</h4>
+      <ul class="picks">
+        ${rows.map(r => `
+          <li class="pick" ${r.gaps.length ? 'style="border-left-color:var(--alert)"' : ''}>
+            <span class="pick-no">WK ${r.w}</span>
+            <span class="pick-name" ${r.gaps.length ? 'style="color:var(--alert)"' : ''}>
+              ${r.gaps.length ? 'CANNOT FILL: ' + r.gaps.join(', ') : 'Coverable'}
+            </span>
+            <span class="pick-pos">${r.onBye.map(id => nm(id).n + ' (' + nm(id).t + ')').join(', ')}</span>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+function faabHTML(rosters, teamOf) {
+  const budget = 200;
+  const rows = (rosters || []).map(r => ({
+    name: teamOf[r.roster_id] || ('Roster ' + r.roster_id),
+    left: budget - ((r.settings && r.settings.waiver_budget_used) || 0),
+    me: r.roster_id === MY_ROSTER_ID
+  })).sort((a, b) => b.left - a.left);
+  return `
+    <div class="live-section">
+      <h4>FAAB remaining — who can outbid you</h4>
+      <ul class="picks">
+        ${rows.map(r => `
+          <li class="pick" ${r.me ? 'style="border-left-color:var(--blue)"' : ''}>
+            <span class="pick-name" ${r.me ? 'style="color:var(--blue)"' : ''}>${r.name}</span>
+            <span class="pick-team">$${r.left}</span>
+          </li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
 function startSeasonPolling() {
   if (seasonTimer) clearInterval(seasonTimer);
   pollSeason();
