@@ -42,8 +42,14 @@
       ]
     },
     "injury_radar": {
-      "updated": null,
-      "items": []
+      "updated": "2026-09-11T01:24:27Z",
+      "items": [
+        { "text": "<b>Breece Hall</b> (NYJ, groin) is trending toward playing Sunday at Tennessee per HC Aaron Glenn. He is your starting RB2 and still carries a Questionable tag in Sleeper — the strain dates to an Aug 17 practice and he never returned to full team drills in preseason (NFL.com / Bleacher Report, 9/8)", "flag": true },
+        { "text": "You already own the handcuff: <b>Braelon Allen</b> held the Jets' starting backfield through preseason and takes it back if Hall is scratched. No waiver move needed — just a lineup swap (RotoWire, 9/8)", "flag": true },
+        { "text": "<b>Alec Pierce</b> (IND) was limited with a heel injury in Week 1 practice, but Steichen says he is on track to play at Baltimore. He is a bench hold for you this week, not a start (Colts.com / NBC Sports, 9/9)", "flag": false },
+        { "text": "Correlation warning: <b>Lamar Jackson</b> (QB) and <b>Mark Andrews</b> (TE) both play Indianapolis in Week 1. Two of your nine starters share one game, which concentrates your variance more than the lineup looks (Sleeper schedule, 9/10)", "flag": false },
+        { "text": "No other player on your roster carries an injury designation as of this sync. Checked: Chase Brown, CeeDee Lamb, Tetairoa McMillan, Romeo Doubs, Tony Pollard, Cam Little (Sleeper player metadata, 9/10)", "flag": false }
+      ]
     },
     "trade_radar": {
       "updated": null,
@@ -54,8 +60,15 @@
       "items": []
     },
     "lineup_lock": {
-      "updated": null,
-      "items": []
+      "updated": "2026-09-11T01:24:27Z",
+      "items": [
+        { "text": "WEEK 1 — <b>The Punishers</b> vs <b>IPlay's Regime</b> (IsaacWitz), matchup_id 1. They are already on the board at 19.35; all nine of your starters have yet to play (Sleeper matchups, 9/10)", "flag": true },
+        { "text": "Your lineup as set: QB <b>Lamar Jackson</b> · RB <b>Chase Brown</b> · RB <b>Breece Hall</b> · WR <b>CeeDee Lamb</b> · WR <b>Tetairoa McMillan</b> · WR <b>Romeo Doubs</b> · TE <b>Mark Andrews</b> · FLEX <b>Tony Pollard</b> · K <b>Cam Little</b> (Sleeper rosters, 9/10)", "flag": false },
+        { "text": "THE ONE LIVE DECISION IS RB2. If <b>Breece Hall</b> is downgraded or inactive, swap in <b>Braelon Allen</b> — same backfield, and he is already on your bench. Official inactives post 90 minutes before the 1:00 PM ET kickoffs (NFL.com, 9/8)", "flag": true },
+        { "text": "<b>Tony Pollard</b> in the FLEX is correct for this league specifically: <code>0.1 per rush attempt</code> means 18 carries banks 1.8 points before a yard is gained, so his volume floor beats a higher-ceiling receiver in a format that also scores you against the weekly median", "flag": false },
+        { "text": "Bench: <b>Jared Goff</b> (QB), <b>Woody Marks</b>, <b>Braelon Allen</b> (RB), <b>Alec Pierce</b>, <b>Jerry Jeudy</b>, <b>Makai Lemon</b>, <b>Kayshon Boutte</b> (WR). No DEF exists in this league — nothing to stream (Sleeper rosters, 9/10)", "flag": false },
+        { "text": "Reminder: <code>league_average_match</code> is ON, so you also play the league median. Trailing 0–19.35 head-to-head is not a reason to chase ceiling yet — the median game is still fully winnable on floor", "flag": false }
+      ]
     },
     "camp_watch": {
       "updated": "2026-08-25T02:54:47Z",
