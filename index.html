@@ -841,6 +841,8 @@ async function pollSeason() {
       <h4>Bench</h4>
       <ul class="picks">${benchIds.map(id => playerRow(id, pts[id], '')).join('')}</ul>
     </div>
+    ${byePlannerHTML(me.players || [], state.week)}
+    ${faabHTML(rosters, teamOf)}
     <div class="live-section">
       <h4>Injury designations</h4>
       ${injuryMap
