@@ -717,6 +717,165 @@ function startDraftPolling() {
   draftTimer = setInterval(pollDraft, 15000);
 }
 
+/* ================= LIVE SEASON BOARD =================
+   Fetches straight from Sleeper in the browser on every page load.
+   No dependency on a scheduled task, a laptop being awake, or a git push. */
+const LEAGUE_ID = '1325388108564291584';
+const MY_ROSTER_ID = 3;
+const SLOT_LABELS = ['QB', 'RB', 'RB', 'WR', 'WR', 'WR', 'TE', 'FLEX', 'K'];
+const NAMES_KEY = 'punishers_names_v1';
+let seasonTimer = null;
+let nameMap = null;
+let injuryMap = null;   // only populated on demand — see loadInjuries()
+
+const api = (path) => fetch('https://api.sleeper.app/v1' + path).then(r => r.json());
+
+/* Names come from the draft picks endpoint (~83KB) rather than the full
+   player map (~5MB). Cached in localStorage; rosters rarely gain undrafted
+   players, and any that appear fall back to showing the raw ID. */
+async function ensureNames() {
+  if (nameMap) return nameMap;
+  try {
+    const cached = JSON.parse(localStorage.getItem(NAMES_KEY));
+    if (cached && cached.v === 1 && cached.map) { nameMap = cached.map; return nameMap; }
+  } catch (e) { /* ignore */ }
+  const picks = await api('/draft/' + DRAFT_ID + '/picks');
+  const m = {};
+  (picks || []).forEach(p => {
+    const md = p.metadata || {};
+    m[p.player_id] = {
+      n: ((md.first_name || '') + ' ' + (md.last_name || '')).trim(),
+      p: md.position || '',
+      t: md.team || ''
+    };
+  });
+  nameMap = m;
+  try { localStorage.setItem(NAMES_KEY, JSON.stringify({ v: 1, map: m })); } catch (e) { /* quota */ }
+  return nameMap;
+}
+
+function nm(id) {
+  const e = (nameMap && nameMap[id]) || null;
+  return e || { n: '#' + id, p: '', t: '' };
+}
+
+function playerRow(id, pts, slot) {
+  const e = nm(id);
+  const inj = injuryMap && injuryMap[id];
+  const bad = inj && /out|doubtful|ir/i.test(inj);
+  return `<li class="pick ${bad ? 'mine' : ''}" ${bad ? 'style="border-left-color:var(--alert)"' : ''}>
+    ${slot ? `<span class="pick-no">${slot}</span>` : ''}
+    <span class="pick-name">${e.n}</span>
+    <span class="pick-pos">${e.p}${e.t ? ' · ' + e.t : ''}${inj ? ' · <span style="color:var(--alert)">' + inj + '</span>' : ''}</span>
+    <span class="pick-team">${typeof pts === 'number' ? pts.toFixed(1) : ''}</span>
+  </li>`;
+}
+
+async function pollSeason() {
+  const box = document.getElementById('season-board');
+  if (!box) { if (seasonTimer) clearInterval(seasonTimer); seasonTimer = null; return; }
+
+  let state, rosters, users, matchups;
+  try {
+    await ensureNames();
+    state = await api('/state/nfl');
+    if (state.season_type !== 'regular' || !state.week) {
+      box.innerHTML = `<div class="live-head"><div class="live-title">Season Board</div></div>
+        <div class="live-err" style="color:var(--grey)">Not in the regular season — nothing live to show.</div>`;
+      return;
+    }
+    [rosters, users, matchups] = await Promise.all([
+      api('/league/' + LEAGUE_ID + '/rosters'),
+      api('/league/' + LEAGUE_ID + '/users'),
+      api('/league/' + LEAGUE_ID + '/matchups/' + state.week)
+    ]);
+  } catch (e) {
+    box.innerHTML = `<div class="live-err">Can't reach Sleeper right now — retrying. Check the Sleeper app directly.</div>`;
+    return;
+  }
+
+  const teamOf = {};
+  const userById = {};
+  (users || []).forEach(u => { userById[u.user_id] = (u.metadata && u.metadata.team_name) || u.display_name; });
+  (rosters || []).forEach(r => { teamOf[r.roster_id] = userById[r.owner_id] || ('Roster ' + r.roster_id); });
+
+  const me = (matchups || []).find(m => m.roster_id === MY_ROSTER_ID);
+  const myRoster = (rosters || []).find(r => r.roster_id === MY_ROSTER_ID);
+  if (!me || !myRoster) {
+    box.innerHTML = `<div class="live-err">Couldn't find roster ${MY_ROSTER_ID} in week ${state.week}.</div>`;
+    return;
+  }
+  const opp = (matchups || []).find(m => m.matchup_id === me.matchup_id && m.roster_id !== MY_ROSTER_ID);
+
+  const starters = me.starters || [];
+  const pts = me.players_points || {};
+  const benchIds = (me.players || []).filter(p => !starters.includes(p));
+  const myPts = me.points || 0;
+  const oppPts = opp ? (opp.points || 0) : 0;
+  const lead = myPts - oppPts;
+
+  // league median — this league also scores you against it every week
+  const allPts = (matchups || []).map(m => m.points || 0).sort((a, b) => a - b);
+  const mid = allPts.length ? (allPts[Math.floor((allPts.length - 1) / 2)] + allPts[Math.ceil((allPts.length - 1) / 2)]) / 2 : 0;
+
+  box.className = 'live';
+  box.innerHTML = `
+    <div class="live-head">
+      <div class="live-title"><span class="live-dot"></span>Week ${state.week} — Live</div>
+      <div class="live-refresh">straight from Sleeper &middot; ${new Date().toLocaleTimeString()}</div>
+    </div>
+    <div class="live-stats">
+      <div class="stat"><div class="stat-label">The Punishers</div><div class="stat-value">${myPts.toFixed(1)}</div></div>
+      <div class="stat"><div class="stat-label">${opp ? teamOf[opp.roster_id] : 'Opponent'}</div><div class="stat-value">${oppPts.toFixed(1)}</div></div>
+      <div class="stat"><div class="stat-label">H2H Margin</div><div class="stat-value ${lead < 0 ? 'hot' : ''}">${lead >= 0 ? '+' : ''}${lead.toFixed(1)}</div></div>
+      <div class="stat"><div class="stat-label">vs League Median</div><div class="stat-value ${myPts < mid ? 'hot' : ''}">${(myPts - mid >= 0 ? '+' : '') + (myPts - mid).toFixed(1)}</div></div>
+    </div>
+    <div class="live-section">
+      <h4>Starting lineup</h4>
+      <ul class="picks">${starters.map((id, i) => id && id !== '0'
+        ? playerRow(id, pts[id], SLOT_LABELS[i])
+        : `<li class="pick" style="border-left-color:var(--alert)"><span class="pick-no">${SLOT_LABELS[i]}</span><span class="pick-name" style="color:var(--alert)">EMPTY SLOT</span></li>`
+      ).join('')}</ul>
+    </div>
+    <div class="live-section">
+      <h4>Bench</h4>
+      <ul class="picks">${benchIds.map(id => playerRow(id, pts[id], '')).join('')}</ul>
+    </div>
+    <div class="live-section">
+      <h4>Injury designations</h4>
+      ${injuryMap
+        ? '<div class="empty">Loaded — shown inline above. Blank means no designation.</div>'
+        : '<button class="brief-btn" id="inj-btn">Load injury status</button><div class="brief-sub" style="padding:8px 0 0;">Optional — pulls Sleeper\'s full player file (~5MB). Skip it on cellular.</div>'}
+    </div>
+  `;
+
+  const ib = document.getElementById('inj-btn');
+  if (ib) ib.addEventListener('click', loadInjuries);
+}
+
+async function loadInjuries() {
+  const btn = document.getElementById('inj-btn');
+  if (btn) { btn.textContent = 'Loading ~5MB…'; btn.disabled = true; }
+  try {
+    const all = await api('/players/nfl');
+    injuryMap = {};
+    Object.keys(all).forEach(id => {
+      const s = all[id] && all[id].injury_status;
+      if (s) injuryMap[id] = s;
+    });
+  } catch (e) {
+    if (btn) { btn.textContent = 'Failed — tap to retry'; btn.disabled = false; }
+    return;
+  }
+  pollSeason();
+}
+
+function startSeasonPolling() {
+  if (seasonTimer) clearInterval(seasonTimer);
+  pollSeason();
+  seasonTimer = setInterval(pollSeason, 30000);
+}
+
 /* Copy-paste briefing — bring a fresh Claude chat up to speed in one paste */
 const BRIEF = [
   "I'm drafting in my Sleeper fantasy football league. Here's everything you need:",
