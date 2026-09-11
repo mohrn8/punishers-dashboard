@@ -556,7 +556,7 @@ const TABS = [
     isNotepad: true,
   },
 ];
-let activeTab = 'draft-prep';
+let activeTab = 'season';   // season is live now; draft tabs are archival
 let currentData = {};
 
 /* ================= LIVE DRAFT BOARD ================= */
@@ -1025,11 +1025,9 @@ function renderNotepad() {
 function renderPanels() {
   const tab = TABS.find(t => t.id === activeTab);
 
-  // leaving the draft-day tab stops the poll
-  if (tab.id !== 'draft-day' && draftTimer) {
-    clearInterval(draftTimer);
-    draftTimer = null;
-  }
+  // leaving a live tab stops its poll
+  if (tab.id !== 'draft-day' && draftTimer) { clearInterval(draftTimer); draftTimer = null; }
+  if (tab.id !== 'season' && seasonTimer) { clearInterval(seasonTimer); seasonTimer = null; }
 
   if (tab.isNotepad) {
     renderNotepad();
@@ -1038,6 +1036,8 @@ function renderPanels() {
   const main = document.getElementById('panels');
   const liveBoard = tab.id === 'draft-day'
     ? '<div class="live" id="live-board"><div class="live-head"><div class="live-title">Loading live board…</div></div></div>'
+    : tab.id === 'season'
+    ? '<div class="live" id="season-board" style="margin-bottom:16px;"><div class="live-head"><div class="live-title">Loading live season board…</div></div></div>'
     : '';
   main.innerHTML = liveBoard + `<div class="panel-grid ${tab.single ? 'single-col' : ''}">` +
     tab.panels.map(cfg => {
@@ -1058,6 +1058,7 @@ function renderPanels() {
     startDraftPolling();
     wireBrief();
   }
+  if (tab.id === 'season') startSeasonPolling();
 }
 async function load() {
   let data = {};
