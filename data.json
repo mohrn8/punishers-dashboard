@@ -1,11 +1,11 @@
 {
-  "last_sync": "2026-08-30T23:42:00Z",
+  "last_sync": "2026-09-11T01:24:27Z",
   "big_board": [],
   "ticker": [
-    { "text": "DRAFT SLOT CHANGED — you pick 11th, not 3rd. Old slot-3 plan is void", "hot": true },
-    { "text": "Draft scheduled Sat Sept 5, 11:00 PM ET (verify the hour in Sleeper)", "hot": true },
-    { "text": "Ashton Jeanty left Raiders practice early — check status before paying RB1 cost", "hot": true },
-    { "text": "NFL roster cutdown deadline Aug 30 — waiver churn incoming", "hot": false }
+    { "text": "Breece Hall (groin) trending to play Sun at TEN — Braelon Allen is your own insurance", "hot": true },
+    { "text": "Week 1: The Punishers vs IPlay's Regime — they lead 19.35–0, all your starters yet to play", "hot": true },
+    { "text": "Alec Pierce limited (heel) but on track for Week 1 at Baltimore", "hot": false },
+    { "text": "Draft complete — 16-man roster, Lamar Jackson / Chase Brown / CeeDee Lamb core", "hot": false }
   ],
   "sections": {
     "pre_draft": {
