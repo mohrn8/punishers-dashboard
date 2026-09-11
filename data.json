@@ -38,7 +38,8 @@
       "updated": "2026-08-25T02:54:47Z",
       "items": [
         { "text": "Draft is <b>pre_draft</b> — scheduled for <b>2026-09-06 03:00 UTC</b>, which is <b>11:00 PM ET Saturday Sept 5</b>. That is an unusual hour; confirm it in the Sleeper app in case it reflects a timezone quirk in how it was set", "flag": true },
-        { "text": "16 rounds, snake, 120-second pick timer, CPU autopick ON — if you miss a pick it gets made for you. Live tracking (recent picks, positional runs, picks until your turn) switches on automatically within 24 hours of start time", "flag": false }
+        { "text": "DRAFT COMPLETE — all 192 picks in, 16-man roster built. This tab is now archival; <code>punishers-draft-prep</code> can be disabled in the Scheduled sidebar (Sleeper draft status, 9/10)", "flag": true },
+      { "text": "The <code>big_board</code> was never generated. It was scheduled to build on the morning of Sept 5, but the Claude app was closed that day, so the best-available panel had nothing to show during the draft", "flag": false }
       ]
     },
     "injury_radar": {
@@ -71,25 +72,20 @@
       ]
     },
     "camp_watch": {
-      "updated": "2026-08-25T02:54:47Z",
+      "updated": "2026-09-11T01:24:27Z",
       "items": [
-        { "text": "<b>Ashton Jeanty</b> left Raiders practice early after diving for a ball and landing awkwardly — no designation announced yet. He carries a top-15 ADP, so confirm his status before draft night", "flag": true },
-        { "text": "<b>Josh Jacobs</b> (groin) has ceded extensive first-team work to <b>MarShawn Lloyd</b> in Green Bay — the most actionable backfield change on the board right now", "flag": true },
-        { "text": "<b>Ricky Pearsall</b> officially ruled out for the 2026 season by San Francisco following PCL surgery", "flag": true },
-        { "text": "<b>Luther Burden III</b> (CHI) expected to miss the remainder of preseason with a groin injury; Chicago is hopeful for Week 1", "flag": false },
-        { "text": "<b>Jeremiyah Love</b> (ARI RB) is working through a high ankle sprain — the team is optimistic about Week 1, but high ankles routinely linger longer than the initial optimism", "flag": false },
-        { "text": "<b>Aug 30 is the league-wide cutdown deadline.</b> Rosters drop to 53 and the biggest free-agent wave of the year hits right before your draft — expect real names to change teams", "flag": true }
+        { "text": "Training camp is over and the season has started (Week 1, <code>season_type: regular</code>). This panel now switches to in-season emergence — snap-share climbers, new starters after injuries, and committee changes — rather than camp battles (Sleeper state, 9/10)", "flag": false },
+        { "text": "No in-season usage data exists yet; Week 1 is still in progress. The daily monitor fills this with waiver-relevant risers once games are played — provided the Claude app is open when it runs at 7:00 AM", "flag": false }
       ]
     },
     "colts_watch": {
-      "updated": "2026-08-25T02:54:47Z",
+      "updated": "2026-09-11T01:24:27Z",
       "items": [
-        { "text": "<b>Daniel Jones</b> is the expected Week 1 starter and has looked healthy throughout camp — reporting calls his recent practice work the clearest sign yet the Achilles is behind him. He will not play in the first two preseason games", "flag": true },
-        { "text": "<b>Alec Pierce</b> remains on PUP after offseason ankle surgery with no timeline given. He is listed as PUP on the preseason depth chart — this has now dragged the entire camp", "flag": true },
-        { "text": "<b>Keenan Allen</b> signed with Indianapolis but did not practice on his first day with the team", "flag": true },
-        { "text": "<b>Anthony Richardson Sr.</b> started and played the entire first half of the preseason opener, a 13-13 tie with New England", "flag": false },
-        { "text": "The Colts signed extensions for both <b>Daniel Jones</b> and <b>Alec Pierce</b> this offseason", "flag": false },
-        { "text": "Steichen sat the starters against Atlanta following two joint practices; a decision on whether they play the Aug 29 preseason finale against Detroit is still pending", "flag": false }
+        { "text": "<b>Daniel Jones</b> was a FULL participant in Wednesday's practice report and starts the opener — his first game since tearing his Achilles in Week 14 last season (Colts.com, 9/9)", "flag": true },
+        { "text": "<b>Alec Pierce</b> was limited with a heel injury in Week 1 practice but Steichen says he is on track to play. He had ankle/heel surgery in late March and signed a four-year, $114M deal (Colts.com / SI, 9/9)", "flag": true },
+        { "text": "Colts open at <b>Baltimore</b> on Sunday — a game that also decides the week for your QB <b>Lamar Jackson</b> and TE <b>Mark Andrews</b>, and for <b>Alec Pierce</b> on your bench (schedule, 9/10)", "flag": true },
+        { "text": "Indianapolis expects its full receiving corps available for Jones's return, with Pierce back in the fold (Colts.com, 9/9)", "flag": false },
+        { "text": "Steichen addressed the Week 1 outlook for Jones, <b>Tyler Warren</b>, <b>Jonathan Taylor</b>, and Pierce in his Sept 7 media availability (Colts.com, 9/7)", "flag": false }
       ]
     }
   }
