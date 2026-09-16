@@ -961,6 +961,93 @@ function faabHTML(rosters, teamOf) {
   `;
 }
 
+/* ================= FREE AGENTS =================
+   Cross-references EVERY NFL player against all 12 rosters, in the browser.
+   The 5MB player file is fine here — only the server-side fetch tool chokes on it. */
+let playersAll = null;   // in-memory only; too large for localStorage
+let faList = null;
+let faPos = 'ALL';
+
+async function loadFreeAgents() {
+  const box = document.getElementById('fa-board');
+  if (!box) return;
+  box.innerHTML = '<div class="live-head"><div class="live-title">Loading full player file (~5MB)…</div></div>'
+    + '<div class="brief-sub" style="padding:14px 18px 18px;">One-time download for this page load. Slow on cellular.</div>';
+  try {
+    if (!playersAll) playersAll = await api('/players/nfl');
+    const [rosters, trending] = await Promise.all([
+      api('/league/' + LEAGUE_ID + '/rosters'),
+      api('/players/nfl/trending/add?lookback_hours=48&limit=200')
+    ]);
+    const taken = new Set();
+    (rosters || []).forEach(r => (r.players || []).forEach(p => taken.add(String(p))));
+    const tmap = {};
+    (trending || []).forEach(t => { tmap[String(t.player_id)] = t.count; });
+
+    const out = [];
+    Object.keys(playersAll).forEach(id => {
+      if (taken.has(id)) return;
+      const p = playersAll[id];
+      if (!p || !p.team) return;                                   // no NFL team = not rosterable
+      if (['QB','RB','WR','TE','K'].indexOf(p.position) === -1) return;
+      if (p.status && /retired|inactive/i.test(p.status)) return;
+      out.push({
+        id,
+        name: p.full_name || ((p.first_name || '') + ' ' + (p.last_name || '')).trim(),
+        pos: p.position,
+        team: p.team,
+        bye: TEAM_BYE[p.team] || null,
+        inj: p.injury_status || '',
+        trend: tmap[id] || 0
+      });
+    });
+    out.sort((a, b) => b.trend - a.trend);
+    faList = out;
+    renderFA();
+  } catch (e) {
+    box.innerHTML = '<div class="live-err">Couldn\'t load the player file — check connection and retry.</div>';
+  }
+}
+
+function renderFA() {
+  const box = document.getElementById('fa-board');
+  if (!box || !faList) return;
+  const POSNS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'K'];
+  const filtered = (faPos === 'ALL' ? faList : faList.filter(p => p.pos === faPos)).slice(0, 40);
+  const shownTrending = filtered.filter(p => p.trend > 0).length;
+
+  box.className = 'live';
+  box.innerHTML = `
+    <div class="live-head">
+      <div class="live-title">Free Agents — ${faList.length.toLocaleString()} available</div>
+      <div class="live-refresh">cross-checked vs all 12 rosters &middot; ${new Date().toLocaleTimeString()}</div>
+    </div>
+    <div class="live-section">
+      <h4>Position</h4>
+      <div class="runs">
+        ${POSNS.map(p => `<div class="run ${p === faPos ? 'surge' : ''}" data-pos="${p}" style="cursor:pointer">${p}</div>`).join('')}
+      </div>
+    </div>
+    <div class="live-section">
+      <h4>Top ${filtered.length} by trending adds${shownTrending < filtered.length ? ' (untrending players listed after)' : ''}</h4>
+      <ul class="picks">
+        ${filtered.map(p => {
+          const byeBad = p.bye === 13;     // week your only TE and QB are out
+          return `<li class="pick" ${byeBad ? 'style="border-left-color:var(--alert)"' : ''}>
+            <span class="pick-name">${p.name}</span>
+            <span class="pick-pos">${p.pos} &middot; ${p.team}${p.bye ? ' &middot; bye ' + (byeBad ? '<span style="color:var(--alert)">W' + p.bye + '</span>' : 'W' + p.bye) : ''}${p.inj ? ' &middot; <span style="color:var(--alert)">' + p.inj + '</span>' : ''}</span>
+            <span class="pick-team">${p.trend ? '+' + p.trend.toLocaleString() : ''}</span>
+          </li>`;
+        }).join('')}
+      </ul>
+      <div class="brief-sub" style="padding:12px 0 0;">Red = bye in Week 13, when Lamar Jackson, Mark Andrews, Breece Hall, Braelon Allen and Alec Pierce are all out. A replacement with a Week 13 bye does not solve that.</div>
+    </div>
+  `;
+  box.querySelectorAll('[data-pos]').forEach(el => {
+    el.addEventListener('click', () => { faPos = el.dataset.pos; renderFA(); });
+  });
+}
+
 function startSeasonPolling() {
   if (seasonTimer) clearInterval(seasonTimer);
   pollSeason();
@@ -1122,6 +1209,12 @@ function renderPanels() {
 
   if (tab.isNotepad) {
     renderNotepad();
+    return;
+  }
+  if (tab.isFreeAgents) {
+    document.getElementById('panels').innerHTML =
+      '<div class="live" id="fa-board"><div class="live-head"><div class="live-title">Free Agents</div></div></div>';
+    if (faList) renderFA(); else loadFreeAgents();
     return;
   }
   const main = document.getElementById('panels');
