@@ -1254,7 +1254,14 @@ async function load() {
   }
   currentData = data;
   bigBoard = data.big_board || [];
-  document.getElementById('sync-time').textContent = data.last_sync ? 'synced ' + timeAgo(data.last_sync) : 'no data yet';
+  // Scores, lineups and free agents render live from Sleeper on every load.
+  // last_sync only describes the written ANALYSIS panels, so label it that way.
+  const stale = data.last_sync ? (Date.now() - new Date(data.last_sync).getTime()) > 2 * 864e5 : true;
+  document.getElementById('sync-time').innerHTML =
+    '<span style="color:var(--blue)">Sleeper: live</span>'
+    + '<span style="color:var(--grey-dim)"> &middot; analysis </span>'
+    + '<span style="color:' + (stale ? 'var(--alert)' : 'var(--grey)') + '">'
+    + (data.last_sync ? timeAgo(data.last_sync) : 'never') + '</span>';
   const ticker = document.getElementById('ticker');
   ticker.innerHTML = (data.ticker || []).map(t =>
     `<div class="pill ${t.hot ? 'hot' : ''}">${t.text}</div>`
